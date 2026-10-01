@@ -28,7 +28,8 @@ body {
   background-image:
     radial-gradient(circle at 5% 5%, rgba(46, 133, 72, 0.07) 0%, transparent 55%),
     radial-gradient(rgba(125, 147, 133, 0.04) 1px, transparent 1px);
-  background-size: 100% 100%, 20px 20px;
+  background-size: 100vw 100vh, 20px 20px;
+  background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
