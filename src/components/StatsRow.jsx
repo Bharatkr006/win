@@ -1,30 +1,7 @@
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo } from 'react';
 import { useDailyCounts } from '../hooks/data';
 import { dateKey } from '../utils/dates';
 import { FlameIcon, TrophyIcon, TargetIcon, CalendarIcon } from './icons';
-
-function AnimatedNumber({ value }) {
-  const [display, setDisplay] = useState(value);
-
-  useEffect(() => {
-    if (value === display) return;
-    const step = value > display ? 1 : -1;
-
-    const interval = setInterval(() => {
-      setDisplay(prev => {
-        if (prev === value) {
-          clearInterval(interval);
-          return prev;
-        }
-        return prev + step;
-      });
-    }, 50);
-
-    return () => clearInterval(interval);
-  }, [value, display]);
-
-  return <span>{display}</span>;
-}
 
 export default function StatsRow() {
   const { counts, isLoading } = useDailyCounts();
@@ -46,11 +23,15 @@ export default function StatsRow() {
         totalDone += counts[d];
       }
 
+      // Walk backwards from today to calculate current streak,
+      // then scan all dates for best streak.
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       const todayStr = dateKey(today);
 
+      // Current streak: count consecutive days ending at today (or yesterday).
       const cursor = new Date(today);
+      // If today has no activity yet, start checking from yesterday
       if (!counts[todayStr] || counts[todayStr] === 0) {
         cursor.setDate(cursor.getDate() - 1);
       }
@@ -64,14 +45,13 @@ export default function StatsRow() {
         }
       }
 
+      // Best streak: scan forward through all sorted dates.
       if (sortedDates.length > 0) {
         let tempStreak = 1;
         bestStreak = 1;
         for (let i = 1; i < sortedDates.length; i++) {
-          const prevStr = sortedDates[i - 1];
-          const currStr = sortedDates[i];
-          const prev = new Date(prevStr + 'T00:00:00');
-          const curr = new Date(currStr + 'T00:00:00');
+          const prev = new Date(sortedDates[i - 1] + 'T00:00:00');
+          const curr = new Date(sortedDates[i] + 'T00:00:00');
           const diffDays = Math.round((curr - prev) / (1000 * 60 * 60 * 24));
           if (diffDays === 1) {
             tempStreak++;
@@ -82,6 +62,7 @@ export default function StatsRow() {
         }
       }
 
+      // Current streak could be the best
       bestStreak = Math.max(bestStreak, currentStreak);
     }
 
@@ -90,40 +71,35 @@ export default function StatsRow() {
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-2 gap-4 h-full min-h-[220px]">
-        <div className="animate-pulse rounded-2xl bg-surface border border-border-soft flex-1" />
-        <div className="animate-pulse rounded-2xl bg-surface border border-border-soft flex-1" />
-        <div className="animate-pulse rounded-2xl bg-surface border border-border-soft flex-1" />
-        <div className="animate-pulse rounded-2xl bg-surface border border-border-soft flex-1" />
+      <div className="grid grid-cols-2 gap-4 w-full">
+        <div className="h-24 animate-pulse rounded-2xl bg-surface border border-border-soft p-4 sm:p-6" />
+        <div className="h-24 animate-pulse rounded-2xl bg-surface border border-border-soft p-4 sm:p-6" />
+        <div className="h-24 animate-pulse rounded-2xl bg-surface border border-border-soft p-4 sm:p-6" />
+        <div className="h-24 animate-pulse rounded-2xl bg-surface border border-border-soft p-4 sm:p-6" />
       </div>
     );
   }
 
   const items = [
-    { label: 'Streak', value: stats.currentStreak, suffix: 'd', icon: FlameIcon },
-    { label: 'Best', value: stats.bestStreak, suffix: 'd', icon: TrophyIcon },
-    { label: 'Done', value: stats.totalDone, suffix: '', icon: TargetIcon },
-    { label: 'Active Days', value: stats.daysActive, suffix: '', icon: CalendarIcon },
+    { label: 'Current Streak', value: `${stats.currentStreak} d`, icon: FlameIcon },
+    { label: 'Best Streak', value: `${stats.bestStreak} d`, icon: TrophyIcon },
+    { label: 'Total Done', value: stats.totalDone, icon: TargetIcon },
+    { label: 'Days Active', value: stats.daysActive, icon: CalendarIcon },
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-4 h-full">
+    <div className="grid grid-cols-2 gap-4 w-full">
       {items.map((it, i) => {
         const Icon = it.icon;
         return (
-          <div key={i} className="flex flex-col justify-center rounded-2xl p-4 sm:p-5 border border-border-soft bg-surface transition-all duration-150 hover:shadow-md hover:border-green-mid/20 flex-1 min-h-[100px]">
+          <div key={i} className="flex flex-col justify-center rounded-2xl p-4 sm:p-6 border border-border-soft bg-surface transition-all duration-150 hover:shadow-md hover:border-green-mid/20">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-tight sm:tracking-wide text-green-gray/80 whitespace-nowrap">
+              <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-green-gray/80">
                 {it.label}
               </p>
-              <div className="p-1 sm:p-1.5 rounded-full bg-green-pale shrink-0">
-                <Icon className="h-3 w-3 sm:h-4 sm:w-4 text-green-mid opacity-90" />
-              </div>
+              <Icon className="h-4 w-4 text-green-mid opacity-70" />
             </div>
-            <p className="text-2xl sm:text-3xl font-bold tracking-tighter text-text leading-none mt-1">
-              <AnimatedNumber value={it.value} />
-              <span className="text-xl sm:text-2xl text-green-gray/80 align-baseline">{it.suffix}</span>
-            </p>
+            <p className="text-3xl font-bold tracking-tighter text-text">{it.value}</p>
           </div>
         );
       })}

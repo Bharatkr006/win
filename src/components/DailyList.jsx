@@ -55,7 +55,7 @@ export default function DailyList() {
             }}
             className={`flex-1 py-2.5 text-sm font-semibold rounded-lg transition-all duration-150 ${
               activeTab === tab
-                ? 'bg-green-pale text-green-deep shadow-[0_1px_2px_rgba(46,133,72,0.1)]'
+                ? 'bg-white text-text shadow-sm'
                 : 'text-green-gray hover:text-text hover:bg-white/40'
             }`}
           >

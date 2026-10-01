@@ -1,6 +1,5 @@
-import { getGridSlots, dateKey, isSameDay } from '../utils/dates';
+import { getGridSlots, shortDate, dateKey, isSameDay } from '../utils/dates';
 import { useDailyCounts } from '../hooks/data';
-import { useState } from 'react';
 
 const HEAT_COLORS = [
   'bg-heat-empty', // 0
@@ -23,42 +22,31 @@ export default function Heatmap() {
   const { counts, isLoading } = useDailyCounts();
   const today = new Date();
 
-  const [hoveredCell, setHoveredCell] = useState(null);
-
-  // Month labels
+  // Find where months start to drop a label.
   const monthLabels = [];
   let currentMonth = -1;
+
   for (let col = 0; col < 14; col++) {
-    let foundMonth = -1;
+    let foundMonthInCol = -1;
     for (let row = 0; row < 7; row++) {
       const idx = col * 7 + row;
       if (slots[idx] !== null) {
-        foundMonth = slots[idx].date.getMonth();
+        foundMonthInCol = slots[idx].date.getMonth();
         break;
       }
     }
-    if (foundMonth !== -1 && foundMonth !== currentMonth) {
+
+    if (foundMonthInCol !== -1 && foundMonthInCol !== currentMonth) {
       const triggerSlot = slots.slice(col * 7, col * 7 + 7).find(s => s !== null);
       if (triggerSlot) {
         monthLabels.push({
           label: triggerSlot.date.toLocaleString('en-US', { month: 'short' }),
           colIndex: col,
         });
-        currentMonth = foundMonth;
+        currentMonth = foundMonthInCol;
       }
     }
   }
-
-  const handleMouseEnter = (e, text) => {
-    const rect = e.target.getBoundingClientRect();
-    setHoveredCell({
-      text,
-      x: rect.left + rect.width / 2,
-      y: rect.top - 8,
-    });
-  };
-
-  const handleMouseLeave = () => setHoveredCell(null);
 
   const scrollToDaily = (dateStr) => {
     const element = document.getElementById(`day-${dateStr}`);
@@ -68,93 +56,61 @@ export default function Heatmap() {
   };
 
   return (
-    <div className="flex flex-col h-full rounded-2xl border border-border-soft bg-surface p-4 sm:p-6 shadow-sm overflow-x-auto">
-      <h2 className="text-[13px] sm:text-sm font-bold tracking-tight text-text mb-4 lg:mb-6">Activity</h2>
-
-      <div className="flex flex-col min-w-max">
-        {/* Month labels */}
-        <div className="relative h-5 text-[11px] text-green-gray font-medium tracking-wide ml-[28px] mb-1">
+    <section>
+      <div className="w-full flex-col mt-4">
+        {/* Month labels row */}
+        <div
+          className="relative mb-2 h-5 text-sm text-green-gray font-medium tracking-wide"
+          style={{ width: '100%' }}
+        >
           {monthLabels.map(({ label, colIndex }) => (
             <span
               key={`${label}-${colIndex}`}
-              className="absolute top-0"
-              style={{ left: `${colIndex * 28}px` }}
+              style={{
+                position: 'absolute',
+                left: `calc((${colIndex} / 14) * 100%)`,
+              }}
             >
               {label}
             </span>
           ))}
         </div>
 
-        <div className="flex">
-          {/* Day labels */}
-          <div className="flex flex-col gap-[4px] pr-2 pt-[2px] text-[10px] text-green-gray font-medium w-7">
-            {['', 'Mon', '', 'Wed', '', 'Fri', ''].map((d, i) => (
-              <span key={i} className="h-6 flex items-center justify-end">{d}</span>
-            ))}
-          </div>
-
-          {/* Grid */}
-          <div
-            className="grid gap-1 grid-flow-col"
-            style={{
-              gridTemplateRows: 'repeat(7, 24px)',
-              gridTemplateColumns: 'repeat(14, 24px)'
-            }}
-          >
-            {slots.map((dayObj, i) => {
-              if (!dayObj) {
-                return <div key={`pad-${i}`} className="w-6 h-6 bg-transparent" />;
-              }
-
-              const { date } = dayObj;
-              const dKey = dateKey(date);
-              const rawCount = counts[dKey] ?? 0;
-              const level = getHeatLevel(rawCount);
-              const isToday = isSameDay(date, today);
-
-              // "3 done, Mon, Oct 12"
-              const dayStr = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-              const tooltipText = `${rawCount} done, ${dayStr}`;
-
-              return (
-                <button
-                  key={dKey}
-                  onClick={() => scrollToDaily(dKey)}
-                  onMouseEnter={(e) => handleMouseEnter(e, tooltipText)}
-                  onMouseLeave={handleMouseLeave}
-                  className={`w-6 h-6 rounded-[3px] transition-colors duration-150 relative ${
-                    isLoading ? 'bg-heat-empty animate-pulse' : HEAT_COLORS[level]
-                  } hover:outline-none hover:ring-2 hover:ring-green-mid hover:ring-offset-1 hover:z-20 ${
-                    isToday ? 'ring-2 ring-offset-[1px] ring-green-mid/70 z-10' : ''
-                  }`}
-                />
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Legend */}
-        <div className="flex items-center justify-end gap-1.5 mt-4 text-[10px] font-medium text-green-gray">
-          <span>Less</span>
-          {HEAT_COLORS.map(c => (
-            <span key={c} className={`w-2.5 h-2.5 rounded-[2px] ${c}`} />
-          ))}
-          <span>More</span>
-        </div>
-      </div>
-
-      {/* Tooltip Portal */}
-      {hoveredCell && (
+        {/* CSS Grid for Heatmap explicitly setting columns and rows */}
         <div
-          className="fixed z-[100] rounded-md bg-green-deep text-white px-2.5 py-1 text-[11px] font-medium shadow-lg pointer-events-none whitespace-nowrap transform -translate-x-1/2 -translate-y-full"
+          className="grid gap-[2px] sm:gap-2 w-full"
           style={{
-            left: hoveredCell.x,
-            top: hoveredCell.y,
+             gridTemplateRows: 'repeat(7, minmax(0, 1fr))',
+             gridTemplateColumns: 'repeat(14, minmax(0, 1fr))',
+             gridAutoFlow: 'column',
           }}
         >
-          {hoveredCell.text}
+          {slots.map((dayObj, i) => {
+            if (!dayObj) {
+              return <div key={`pad-${i}`} className="aspect-square bg-transparent" />;
+            }
+
+            const { date } = dayObj;
+            const dKey = dateKey(date);
+            const rawCount = counts[dKey] ?? 0;
+            const level = getHeatLevel(rawCount);
+            const isToday = isSameDay(date, today);
+
+            return (
+              <button
+                key={dKey}
+                onClick={() => scrollToDaily(dKey)}
+                title={`${rawCount} done on ${shortDate(date)}`}
+                className={`aspect-square w-full rounded-[3px] sm:rounded-md transition-all duration-200 ${
+                  isLoading ? 'bg-heat-empty animate-pulse' : HEAT_COLORS[level]
+                } hover:scale-125 hover:shadow-md hover:z-10 ${
+                  isToday ? 'ring-2 ring-offset-2 ring-green-mid outline-none z-10' : ''
+                }`}
+              />
+            );
+          })}
         </div>
-      )}
-    </div>
+      </div>
+    </section>
   );
 }
