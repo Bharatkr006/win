@@ -46,6 +46,8 @@ export default function DayCard({ date, isExpanded, onToggle, isFuture }) {
   const totalCount = relevantHabits.length + dayTasks.length;
   const progressPercent = totalCount === 0 ? 0 : Math.round((doneCount / totalCount) * 100);
 
+  const isComplete = totalCount > 0 && doneCount === totalCount;
+
   const handleAddHabit = (e) => {
     e.preventDefault();
     if (!newHabit.trim()) return;
@@ -78,12 +80,13 @@ export default function DayCard({ date, isExpanded, onToggle, isFuture }) {
     <article id={`day-${dKey}`} className={cardClasses}>
       <button
         onClick={onToggle}
-        className="flex w-full flex-col justify-between p-6 text-left hover:bg-green-pale/30 transition-colors duration-150"
+        className={`flex w-full flex-col justify-between p-6 text-left transition-colors duration-150 ${isComplete ? 'bg-green-pale/30' : 'hover:bg-green-pale/30'}`}
       >
         <div className="flex w-full items-center justify-between pb-1">
           <span className="font-semibold tracking-tight text-text">
             {longDate(date)}
             {isToday && <span className="ml-3 rounded-md bg-green-pale px-2 py-0.5 text-xs uppercase font-bold tracking-wider text-green-deep">Today</span>}
+            {isComplete && <span className="ml-3 rounded-md bg-green-mid px-2 py-0.5 text-[10px] uppercase font-bold tracking-wider text-white">Complete</span>}
           </span>
           <div className="flex items-center gap-3 text-sm text-green-gray">
             {totalCount > 0 && <span className="hidden sm:inline">{doneCount} / {totalCount} done</span>}

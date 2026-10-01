@@ -28,16 +28,14 @@ export default function App() {
 
   // Logged in → show the tracker.
   return (
-    <div className="mx-auto max-w-[1200px] px-0 sm:px-4 py-8 md:px-8 sm:py-10 pb-24 md:pb-10">
-      <div className="px-4 sm:px-0">
-        <Header
-          email={session.user.email}
-          onSignOut={() => supabase.auth.signOut()}
-          onOpenManage={() => setIsManageOpen(true)}
-        />
-      </div>
+    <div className="mx-auto max-w-[1200px] pb-24 md:pb-10">
+      <Header
+        initial={session.user?.user_metadata?.full_name?.[0]?.toUpperCase() || 'W'}
+        onSignOut={() => supabase.auth.signOut()}
+        onOpenManage={() => setIsManageOpen(true)}
+      />
 
-      <div className="mt-8 flex flex-col gap-6 sm:gap-8">
+      <div className="mt-8 flex flex-col gap-6 sm:gap-8 px-0 sm:px-4 md:px-8">
         {/* On mobile, RightPanel goes at the top right under the header */}
         <div className="block lg:hidden w-full px-4 sm:px-0">
           <RightPanel />
