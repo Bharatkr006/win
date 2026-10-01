@@ -44,7 +44,7 @@ export default function DailyList() {
   });
 
   return (
-    <div className="flex flex-col flex-1 pb-20 mt-4 lg:mt-0">
+    <div className="flex flex-col flex-1 mt-4 lg:mt-0">
       <div className="flex bg-green-pale/40 p-1 rounded-xl w-[calc(100%-2rem)] sm:w-full sm:max-w-xs mb-6 mx-4 sm:mx-0">
         {['Today', 'Week', 'All'].map((tab) => (
           <button

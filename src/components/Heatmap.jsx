@@ -3,17 +3,17 @@ import { useDailyCounts } from '../hooks/data';
 
 const HEAT_COLORS = [
   'bg-heat-empty', // 0
-  'bg-heat-1',     // 1-2
-  'bg-heat-2',     // 3-4
-  'bg-heat-3',     // 5-6
-  'bg-heat-4',     // 7+
+  'bg-heat-1',     // 1
+  'bg-heat-2',     // 2-3
+  'bg-heat-3',     // 4-5
+  'bg-heat-4',     // 6+
 ];
 
 function getHeatLevel(count) {
   if (count === 0) return 0;
-  if (count <= 2) return 1;
-  if (count <= 4) return 2;
-  if (count <= 6) return 3;
+  if (count === 1) return 1;
+  if (count <= 3) return 2;
+  if (count <= 5) return 3;
   return 4;
 }
 

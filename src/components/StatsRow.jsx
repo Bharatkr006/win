@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { useDailyCounts } from '../hooks/data';
+import { dateKey } from '../utils/dates';
 import { FlameIcon, TrophyIcon, TargetIcon, CalendarIcon } from './icons';
 
 export default function StatsRow() {
@@ -22,29 +23,47 @@ export default function StatsRow() {
         totalDone += counts[d];
       }
 
-      let tempStreak = 0;
-      if (sortedDates.length > 0) {
-        const firstDate = new Date(sortedDates[0]);
-        const lastDate = new Date();
-        lastDate.setHours(0,0,0,0);
-        let cursorDate = firstDate;
+      // Walk backwards from today to calculate current streak,
+      // then scan all dates for best streak.
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const todayStr = dateKey(today);
 
-        while (cursorDate <= lastDate) {
-          const dateStr = cursorDate.toISOString().split('T')[0];
-          if (counts[dateStr] > 0) {
-            tempStreak++;
-            bestStreak = Math.max(bestStreak, tempStreak);
-            currentStreak = tempStreak;
-          } else {
-            const isToday = new Date().toISOString().split('T')[0] === dateStr;
-            if (!isToday) {
-              tempStreak = 0;
-              currentStreak = 0;
-            }
-          }
-          cursorDate.setDate(cursorDate.getDate() + 1);
+      // Current streak: count consecutive days ending at today (or yesterday).
+      const cursor = new Date(today);
+      // If today has no activity yet, start checking from yesterday
+      if (!counts[todayStr] || counts[todayStr] === 0) {
+        cursor.setDate(cursor.getDate() - 1);
+      }
+      while (true) {
+        const dStr = dateKey(cursor);
+        if (counts[dStr] > 0) {
+          currentStreak++;
+          cursor.setDate(cursor.getDate() - 1);
+        } else {
+          break;
         }
       }
+
+      // Best streak: scan forward through all sorted dates.
+      if (sortedDates.length > 0) {
+        let tempStreak = 1;
+        bestStreak = 1;
+        for (let i = 1; i < sortedDates.length; i++) {
+          const prev = new Date(sortedDates[i - 1] + 'T00:00:00');
+          const curr = new Date(sortedDates[i] + 'T00:00:00');
+          const diffDays = Math.round((curr - prev) / (1000 * 60 * 60 * 24));
+          if (diffDays === 1) {
+            tempStreak++;
+            bestStreak = Math.max(bestStreak, tempStreak);
+          } else {
+            tempStreak = 1;
+          }
+        }
+      }
+
+      // Current streak could be the best
+      bestStreak = Math.max(bestStreak, currentStreak);
     }
 
     return { currentStreak, bestStreak, totalDone, daysActive };
@@ -52,7 +71,7 @@ export default function StatsRow() {
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 w-full">
+      <div className="grid grid-cols-2 gap-4 w-full">
         <div className="h-24 animate-pulse rounded-2xl bg-surface border border-border-soft" />
         <div className="h-24 animate-pulse rounded-2xl bg-surface border border-border-soft" />
         <div className="h-24 animate-pulse rounded-2xl bg-surface border border-border-soft" />
@@ -69,7 +88,7 @@ export default function StatsRow() {
   ];
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 w-full">
+    <div className="grid grid-cols-2 gap-4 w-full">
       {items.map((it, i) => {
         const Icon = it.icon;
         return (

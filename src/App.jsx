@@ -43,8 +43,8 @@ export default function App() {
           <RightPanel />
         </div>
 
-        {/* Heatmap & Stats */}
-        <div id="heatmap-section" className="flex flex-col gap-6 sm:gap-8 w-full scroll-mt-6 px-4 sm:px-0">
+        {/* Heatmap (2/3) & Stats 2×2 (1/3) side-by-side on desktop */}
+        <div id="heatmap-section" className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-6 lg:gap-8 w-full scroll-mt-6 px-4 sm:px-0 items-start">
           <Heatmap />
           <StatsRow />
         </div>
@@ -55,7 +55,7 @@ export default function App() {
             <DailyList />
           </main>
 
-          <aside className="hidden lg:block w-[320px] shrink-0">
+          <aside className="hidden lg:block w-[320px] shrink-0 lg:pt-[72px]">
             <div className="sticky top-10 h-full max-h-[calc(100vh-80px)]">
               <RightPanel />
             </div>
