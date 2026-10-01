@@ -7,7 +7,6 @@ export default function Header({ email, onSignOut, onOpenManage }) {
   return (
     <header className="flex flex-col gap-4 sm:flex-row sm:items-baseline sm:justify-between border-b border-border-soft pb-6">
       <div className="flex flex-col gap-1 w-full max-w-sm">
-        <h1 className="text-2xl font-bold tracking-tighter text-text">Winter Arc</h1>
         <div className="flex items-center gap-3">
           <span className="text-sm font-medium text-green-gray">
             Day {elapsed} of {TOTAL_DAYS}
