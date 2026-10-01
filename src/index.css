@@ -21,6 +21,10 @@
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
 }
 
+html, body {
+  overflow-x: hidden;
+}
+
 body {
   font-family: var(--font-sans);
   background-color: var(--color-background);

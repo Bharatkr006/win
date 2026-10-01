@@ -64,15 +64,15 @@ export default function ManageHabits({ isOpen, onClose }) {
       <div className="flex max-h-[90vh] w-full max-w-md flex-col overflow-hidden rounded-2xl bg-surface shadow-xl border border-border-soft">
 
         {/* Modal Header */}
-        <div className="flex items-center justify-between border-b border-border-soft p-6">
+        <div className="flex items-center justify-between border-b border-border-soft p-4 sm:p-6">
           <h2 className="text-lg font-semibold tracking-tight">Manage Habits</h2>
-          <button onClick={onClose} className="rounded-lg p-1.5 text-green-gray hover:bg-green-pale hover:text-text transition-colors duration-150">
+          <button onClick={onClose} className="rounded-lg p-1.5 text-green-gray hover:bg-green-pale hover:text-text transition-colors duration-150 shrink-0">
             ✕
           </button>
         </div>
 
         {/* Modal Body */}
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 sm:p-6">
 
           {isLoading ? (
             <div className="py-8 text-center text-sm text-green-gray animate-pulse">
@@ -103,13 +103,13 @@ export default function ManageHabits({ isOpen, onClose }) {
                         <li
                           ref={provided.innerRef}
                           {...provided.draggableProps}
-                          className={`flex items-center gap-3 rounded-xl border bg-surface p-3 transition-all duration-150 ${
+                          className={`flex items-center gap-2 rounded-xl border bg-surface py-3 px-2 sm:p-3 transition-all duration-150 ${
                             snapshot.isDragging ? 'border-green-mid shadow-lg' : 'border-border-soft hover:border-green-mid/30'
                           } ${!habit.is_active ? 'opacity-60 bg-surface' : ''}`}
                         >
                           <div
                             {...provided.dragHandleProps}
-                            className="cursor-move p-1 text-green-gray/40 hover:text-green-gray transition-colors duration-150"
+                            className="cursor-move p-1 text-green-gray/40 hover:text-green-gray transition-colors duration-150 shrink-0"
                           >
                             <GripIcon />
                           </div>
@@ -118,15 +118,15 @@ export default function ManageHabits({ isOpen, onClose }) {
                             type="text"
                             value={habit.title}
                             onChange={(e) => updateHabit(habit.id, { title: e.target.value })}
-                            className="flex-1 bg-transparent text-sm outline-none focus:border-b focus:border-green-mid"
+                            className="w-full min-w-0 flex-[1_1_0%] bg-transparent text-[13px] sm:text-sm outline-none focus:border-b focus:border-green-mid"
                           />
 
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
                             <button
                               onClick={() => updateHabit(habit.id, { is_active: !habit.is_active })}
-                              className="text-[11px] font-semibold uppercase tracking-wider text-green-gray hover:text-green-deep transition-colors duration-150"
+                              className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-wider text-green-gray hover:text-green-deep transition-colors duration-150 px-1 sm:px-0"
                             >
-                              {habit.is_active ? 'Archive' : 'Restore'}
+                              {habit.is_active ? 'Arch' : 'Rest'}
                             </button>
                             <button
                               onClick={() => {
