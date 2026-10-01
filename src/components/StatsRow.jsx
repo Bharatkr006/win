@@ -72,10 +72,10 @@ export default function StatsRow() {
   if (isLoading) {
     return (
       <div className="grid grid-cols-2 gap-4 w-full">
-        <div className="h-24 animate-pulse rounded-2xl bg-surface border border-border-soft" />
-        <div className="h-24 animate-pulse rounded-2xl bg-surface border border-border-soft" />
-        <div className="h-24 animate-pulse rounded-2xl bg-surface border border-border-soft" />
-        <div className="h-24 animate-pulse rounded-2xl bg-surface border border-border-soft" />
+        <div className="h-24 animate-pulse rounded-2xl bg-surface border border-border-soft p-4 sm:p-6" />
+        <div className="h-24 animate-pulse rounded-2xl bg-surface border border-border-soft p-4 sm:p-6" />
+        <div className="h-24 animate-pulse rounded-2xl bg-surface border border-border-soft p-4 sm:p-6" />
+        <div className="h-24 animate-pulse rounded-2xl bg-surface border border-border-soft p-4 sm:p-6" />
       </div>
     );
   }
@@ -92,7 +92,7 @@ export default function StatsRow() {
       {items.map((it, i) => {
         const Icon = it.icon;
         return (
-          <div key={i} className="flex flex-col justify-center rounded-2xl p-6 border border-border-soft bg-surface transition-all duration-150 hover:shadow-md hover:border-green-mid/20">
+          <div key={i} className="flex flex-col justify-center rounded-2xl p-4 sm:p-6 border border-border-soft bg-surface transition-all duration-150 hover:shadow-md hover:border-green-mid/20">
             <div className="flex items-center justify-between mb-2">
               <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-green-gray/80">
                 {it.label}
