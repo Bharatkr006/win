@@ -1,0 +1,64 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-green-deep: #194029;
+  --color-green-mid: #2e8548;
+  --color-green-pale: #edF5ef;
+  --color-green-gray: #7d9385;
+  --color-border-soft: #e3ebe6;
+
+  --color-heat-empty: #dfe8e2;
+  --color-heat-1: #c9e0d1;
+  --color-heat-2: #80b996;
+  --color-heat-3: #4da06a;
+  --color-heat-4: #2e8548;
+  --color-heat-5: #194029;
+
+  --color-surface: #ffffff;
+  --color-background: #F7FAF8;
+  --color-text: #1a221d;
+  --color-text-muted: #7d9385;
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-background);
+  color: var(--color-text);
+  background-image:
+    radial-gradient(circle at 5% 5%, rgba(46, 133, 72, 0.07) 0%, transparent 55%),
+    radial-gradient(rgba(125, 147, 133, 0.04) 1px, transparent 1px);
+  background-size: 100% 100%, 20px 20px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* --- Focus ring utility --- */
+*:focus-visible {
+  outline: 2px solid var(--color-green-mid);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* --- Checkbox scale animation --- */
+@keyframes checkPop {
+  0% { transform: scale(0.85); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+.check-pop {
+  animation: checkPop 200ms ease-out;
+}
+
+/* --- Smooth transitions on interactive elements --- */
+button, a, input, textarea, select {
+  transition-property: color, background-color, border-color, box-shadow, opacity, transform;
+  transition-duration: 150ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* --- Progress bar animation --- */
+.progress-fill {
+  transition: width 500ms cubic-bezier(0.4, 0, 0.2, 1),
+              stroke-dasharray 800ms cubic-bezier(0.4, 0, 0.2, 1);
+}
